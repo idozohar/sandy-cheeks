@@ -77,7 +77,7 @@ def inv_kin(start, target):
 
     # two possible solutions for phi --> "Left" or "Right" shoulder
     phi2_plus = np.arccos(d[3]/p05_xy)
-    # phi2_minus = -phi2_plus
+    phi2_minus = -phi2_plus
 
     # <----------------------------------- add choice for shoulder -----
 
@@ -91,7 +91,7 @@ def inv_kin(start, target):
     # two possible solutions for theta5 --> "Up" or "Down" Wrist
     arg = round((p16_z-d[3]) / d[5], 5)
     theta5_plus = np.arccos(arg)
-    # theta5_minus = -theta5_plus
+    theta5_minus = -theta5_plus
 
     # <-------------------------------------------- add choice -----
     # found theta5
@@ -143,7 +143,7 @@ def inv_kin(start, target):
         theta3_plus = np.arccos(A1/A2)
 
     # two possible solutions for theta3 --> "Up" or "Down" elbow
-    # theta3_minus = -theta3_plus
+    theta3_minus = -theta3_plus
     theta[2] = theta3_plus
 
     # ---- theta 2 ----
@@ -155,7 +155,7 @@ def inv_kin(start, target):
     a_12 = a0_i(2, theta)
     a_23 = a0_i(3, theta)
     a_34 = inv(a_12 @ a_23) @ a_14
-    theta[3] = np.arctan2(a_34[1, 0], a_34[0, 0])
-
+    theta[3] = np.arctan2(a_34[1, 0], a_34[0, 0]) + np.pi
+    theta[4] = theta[4] + np.pi
     theta = np.round(theta, 5)
     return theta
