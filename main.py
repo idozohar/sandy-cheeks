@@ -9,62 +9,42 @@ import contacts
 import sensor_reading as sr
 import UR5_kinematics as UR5_kin
 from scipy.spatial.transform import Rotation as R
+import angle_pack as ag
 
 need_render = True
+imp_type = "IM"
 # Set points here (homogeneous transformation matrix)
-start = np.array([[1, 0, 0, -0.7],
-                  [0, 1, 0, -0.21],
-                  [0, 0, -1, 0.2],
+h = 0.2
+start = np.array([[1, 0, 0, -0.4],
+                  [0, 0, -1, -0.4],
+                  [0, 1, 0, 0.2],
                   [0, 0, 0, 1]])
 
-mid = np.array([[1, 0, 0, -0.26],
-                [0, 1, 0, -0.5],
-                [0, 0, -1, 0.14],
+mid = np.array([[1, 0, 0, -0.4],
+                [0, 0, -1, -0.575],
+                [0, 1, 0, 0.2],
                 [0, 0, 0, 1]])
 
-target = np.array([[1, 0, 0, -0.26],
-                   [0, 1, 0, -0.65],
-                   [0, 0, -1, 0.14],
+target = np.array([[1, 0, 0, 0.4],
+                   [0, 0, -1, -0.575],
+                   [0, 1, 0, 0.2],
                    [0, 0, 0, 1]])
 
-up_from_target = np.array([[1, 0, 0, -0.26],
-                           [0, 1, 0, -0.65],
-                           [0, 0, -1, 0.3],
+up_from_target = np.array([[1, 0, 0, 0.4],
+                           [0, 0, -1, -0.575],
+                           [0, 1, 0, 0.4],
                            [0, 0, 0, 1]])
 
-left = np.array([[1, 0, 0, 0.02],
-                 [0, 1, 0, -0.65],
-                 [0, 0, -1, 0.3],
+left = np.array([[1, 0, 0, -0.4],
+                 [0, 0, -1, -0.575],
+                 [0, 1, 0, 0.4],
                  [0, 0, 0, 1]])
-# path 1
-down = np.array([[1, 0, 0, 0.02],
-                 [0, 1, 0, -0.6575],
-                 [0, 0, -1, 0.27],
+
+down = np.array([[1, 0, 0, -0.4],
+                 [0, 0, -1, -0.575],
+                 [0, 1, 0, 0.2],
                  [0, 0, 0, 1]])
-x_down = np.array([0.02, -0.6575, 0.27])
-# path 2
-# down = np.array([[1, 0, 0, 0.027],
-#                  [0, 0, -1, -0.61],
-#                  [0, 1, 0, 0.27],
-#                  [0, 0, 0, 1]])
-
-# path 3
-# down = np.array([[1, 0, 0, 0.027],
-#                  [0, 0, -1, -0.69],
-#                  [0, 1, 0, 0.27],
-#                  [0, 0, 0, 1]])
-
-# path 4
-# down = np.array([[1, 0, 0, -0.1],
-#                  [0, 0, -1, -0.6565],
-#                  [0, 1, 0, 0.27],
-#                  [0, 0, 0, 1]])
-
-# path 5
-# down = np.array([[1, 0, 0, 0.027],
-#                  [0, np.cos(80/180 * np.pi), -np.sin(80/180 * np.pi), -0.6565],
-#                  [0, np.sin(80/180 * np.pi), np.cos(80/180 * np.pi), 0.27],
-#                  [0, 0, 0, 1]])
+x_down = np.array([-0.4, -0.567, 0.2])
 
 dx = 0.01
 dy = 0.01
@@ -74,57 +54,17 @@ temp_mat = R.from_rotvec(angle_err)
 rotation_mat = temp_mat.as_matrix()
 trans_mat = np.identity(4)
 trans_mat[0:3, 0:3] = rotation_mat
-down2 = np.array([[1, 0, 0, 0.02 + dx],
-                  [0, 1, 0, -0.6575 + dy],
-                  [0, 0, -1, 0.20],
+down2 = np.array([[1, 0, 0, -0.4],
+                  [0, 0, -1, -0.4],
+                  [0, 1, 0, 0.2],
                   [0, 0, 0, 1]])
 down2 = down2 @ trans_mat
 
-test = np.array([[1, 0, 0, -0.11],
-                 [0, 0, -1, -0.65],
-                 [0, 1, 0, 0.3],
-                 [0, 0, 0, 1]])
-
-target_test = np.array([[1, 0, 0, -0.26],
-                        [0, 0, -1, -0.5],
-                        [0, 1, 0, 0.3],
-                        [0, 0, 0, 1]])
-
-crash_test = np.array([[1, 0, 0, -0.26],
-                       [0, 0, -1, -0.65],
-                       [0, 1, 0, 0.1],
-                       [0, 0, 0, 1]])
-
-downbox = np.array([[1, 0, 0, -0.15],
-                    [0, 0, -1, -0.7],
-                    [0, 1, 0, 0.27],
-                    [0, 0, 0, 1]])
-
-down2box = np.array([[1, 0, 0, -0.15],
-                     [0, 0, -1, -0.7],
-                     [0, 1, 0, 0.20],
-                     [0, 0, 0, 1]])
 # --- End of points --- #
 
 # add all points by order to path
 path2cylinder_points = np.array([start, mid, target])  # straight path
 path2target_points = np.array([target, up_from_target, left, down, down2])  # straight path with grip
-
-# test for calibration, removes contact with cylinder and box
-# path2cylinder_points = np.array([start, mid, target_test])
-# path2target_points = np.array([target_test, up_from_target, left])
-
-# test for sensor read, crash to table
-# path2cylinder_points = np.array([start, mid, target])
-# path2target_points = np.array([target, up_from_target, crash_test])
-
-# test for sensor read, Hold cylinder in air
-# path2cylinder_points = np.array([start, mid, target])
-# path2target_points = np.array([target, up_from_target])
-
-# test for contacts, crash to box
-# path2cylinder_points = np.array([start, mid, target])  # straight path
-# path2target_points = np.array([target, up_from_target, left, downbox, down2box])
 
 # build simulation from xml file
 model = load_model_from_path("./UR5_our/UR5gripper_box.xml")
@@ -133,24 +73,23 @@ sim = MjSim(model)
 # Define start Position
 StartMatTemp = np.eye(4)
 IntLocMat = np.array([[1, 0, 0, -0.4],
-                      [0, 1, 0, -0.6],
-                      [0, 0, -1, 0.2],
+                      [0, 0, -1, -0.4],
+                      [0, 1, 0, 0.2],
                       [0, 0, 0, 1]])
 
 StartLoc = UR5_kin.inv_kin(StartMatTemp, IntLocMat)
-# StartLoc[3] = StartLoc[3] + np.pi
-# StartLoc[4] = StartLoc[4] + np.pi
+
+x0_m = ag.mat2pos(IntLocMat)
+
 state = sim.get_state()
 # state.qpos[7:13] = np.array([0.02644, -0.51929, 1.07047, -0.55118, 0.02646, 0])
 state.qpos[7:13] = StartLoc
 sim.set_state(state)
 
-
-
 # ---------------  Set Simulation Parameters  ---------------- #
 controller = 'PID'  # Choose Controller: 'PID' , 'impedance' , 'bias'
 hybrid = True  # if true, Movement to cylinder with PID and afterwards with impedance
-move_speed = 0.5  # [m/s] Set the desired Speed
+move_speed = 0.4  # [m/s] Set the desired Speed
 sim_time = 12  # [sec] Length of Simulation
 
 is_gravity_on = True
@@ -169,15 +108,21 @@ kp_im = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1)
 ki_im = np.diag(np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.001]) * 0)  # 0.5
 kd_im = 0.3 * 0  # 0.3
 
+m = 0.2
+omega = 2
+zeta = 0.7
+
+k = m * omega**2
+b = 2 * zeta * omega * m
 # K = np.identity(6) * 4000  # 4000
-K = np.array([[1000, 0, 0, 0, 0, 0],
+K = np.array([[2000, 0, 0, 0, 0, 0],
               [0, 1000, 0, 0, 0, 0],
               [0, 0, 2000, 0, 0, 0],
-              [0, 0, 0, 2500, 0, 0],
-              [0, 0, 0, 0, 500, 0],
-              [0, 0, 500, 0, 0, 500]])
+              [0, 0, 0, 10000, 0, 0],
+              [0, 0, 0, 0, 10000, 0],
+              [0, 0, 0, 0, 0, 20000]])
 
-B = np.identity(6) * 400  # 200
+B = np.identity(6) * 300  # 200
 # B = np.array([[200, 0, 0, 0, 0, 0],
 #               [0, 300, 0, 0, 0, 0],
 #               [0, 0, 200, 0, 0, 0],
@@ -185,7 +130,7 @@ B = np.identity(6) * 400  # 200
 #               [0, 0, 0, 0, 10, 0],
 #               [0, 0, 0, 0, 0, 10]])
 
-M = np.identity(6) * 0.2  # 0.2
+M = np.identity(6) * m  # 0.2
 
 # Camera Settings
 cam_position = sim.data.get_camera_xpos('main1')
@@ -252,8 +197,10 @@ force = np.zeros((3, 1))
 x_r = np.zeros((3, 1))
 x_0 = np.zeros((3, 1))
 x_m = np.ones((6, 1)) * 0
+state_m = np.reshape(np.append(x0_m, np.zeros((1, 6))),(1, 12))
 empty_vec = np.ones((6, 1)) * 0
 gripper_norm = 0.0
+t_prev = 0.0
 
 joints = ['shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
 
@@ -272,6 +219,7 @@ while True:
     x_r_mat = UR5_kin.forward(q_r)
     x_r_temp = x_r_mat[0:3, 3]
     x_r = np.append(x_r, np.reshape(x_r_temp, (3, 1)), axis=1)
+    t_now = sim.data.time
     # Controller choice
     if controller == 'PID':
         bias = is_gravity_on * sim.data.qfrc_bias[6:12] / 101  # 101 is Gear ratio
@@ -283,13 +231,20 @@ while True:
         x_m = np.append(x_m, empty_vec, axis=1)
 
     elif controller == 'impedance':
-        q_d, q_d_dot, x_im = impedance.imic(sim, K, B, M, q_r, q_r_dot, p[k], p_dot[:, k], DT, Tau)
+        if imp_type == "IM":
+            q_d, q_d_dot, x_im = impedance.imic(sim, K, B, M, q_r, q_r_dot, p[k], p_dot[:, k], DT, Tau)
+            x_m = np.append(x_m, np.reshape(x_im, (6, 1)), axis=1)
+        elif imp_type == "PB":
+            q_d, q_d_dot, state_m_temp = impedance.pbic(sim, K, B, M, state_m[-1, :] ,p[k], p_dot[:, k], t_prev, t_now, Tau)
+            state_m = np.append(state_m, np.reshape(state_m_temp, (1, 12)), axis=0)
+            x_m = np.append(x_m, np.reshape(state_m_temp[:6], (6, 1)), axis=1)
+        t_prev = t_now
         bias = is_gravity_on * sim.data.qfrc_bias[6:12] / 101  # 101 is Gear ratio
         pos_error = q_d - q_r[:]
         p_control = kp_im @ pos_error
         d_control = kd_im * (q_d_dot - q_r_dot[:])
         sim.data.ctrl[0:6] = p_control + d_control + bias
-        x_m = np.append(x_m, np.reshape(x_im, (6, 1)), axis=1)
+
 
     elif controller == 'bias':
         pos_error = q_path[:, k] - q_r[:]
@@ -356,7 +311,7 @@ while True:
     sim.step()
 
     # Get Forces on the Cylinder
-    # Tau_cont = contacts.find_contacts(sim, 1, 'cylinder1')  # from contacts
+    Tau_cont = contacts.find_contacts(sim, 'gripperpalm')  # from contacts
     # Get Forces from sensor
     gripper_norm = sr.get_reading(sim, "gripperpalm_norm")
     force = sr.get_reading(sim, "wrist_3_link_f")
@@ -375,13 +330,14 @@ while True:
         torque = act_torque - torque_norm
 
         if hybrid and controller == 'PID':  # Start Impedance Controller when sensing obstacle
-            if abs(force[2]) > 15:
+            if abs(force[1]) > 15:
                 controller = 'impedance'
 
     Tau = np.append(force, torque)
+    # Tau = my_filter.butter_lowpass_filter(Tau, 3.6, 30, 6)
     # filter and log Forces
     force_log = np.append(force_log, np.reshape(Tau, (6, 1)), axis=1)
-    force_log = my_filter.butter_lowpass_filter(force_log, 5, 20, 2)
+    # force_log = my_filter.butter_lowpass_filter(force_log, 3.6, 30, 6)
 
     if need_render:
         viewer.render()
@@ -404,15 +360,15 @@ while True:
             # viewer._paused = True
             # print desired vs actual (q, q_dot)
             # print(sim_loop_num * DT)
-            our_func.print_q_actual(q_path2cylinder, q_path2target, actual_q, DT, 'angle')
-            our_func.print_q_actual(q_dot_2cylinder, q_dot_2target, actual_q_dot, DT, 'speed')
+            # our_func.print_q_actual(q_path2cylinder, q_path2target, actual_q, DT, 'angle')
+            # our_func.print_q_actual(q_dot_2cylinder, q_dot_2target, actual_q_dot, DT, 'speed')
             # print Joint Position Error
-            our_func.print_pos_error(pos_error_log, DT)
+            # our_func.print_pos_error(pos_error_log, DT)
             # print Control effort
-            our_func.print_torque(u_log, DT)
+            # our_func.print_torque(u_log, DT)
             # force print
             our_func.print_force_scope2(force_log, DT)
-            our_func.print_xyz_3D(x_r)
+            # our_func.print_xyz_3D(x_r)
             time = np.linspace(0, sim_time, len(x_0[0, :]))
             our_func.print_xyz_time(time[1:], x_0[:, 1:], x_m[:, 1:], x_r[:, 1:])
 

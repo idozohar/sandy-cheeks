@@ -155,7 +155,7 @@ def inv_kin(start, target):
     a_12 = a0_i(2, theta)
     a_23 = a0_i(3, theta)
     a_34 = inv(a_12 @ a_23) @ a_14
-    theta[3] = np.arctan2(a_34[1, 0], a_34[0, 0]) + np.pi
-    theta[4] = theta[4] + np.pi
+    theta[3] = np.arctan2(a_34[1, 0], a_34[0, 0]) #+ np.pi
+    # theta[4] = theta[4] + np.pi
     theta = np.round(theta, 5)
     return theta

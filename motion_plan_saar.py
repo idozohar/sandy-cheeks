@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import inv
 import our_func
-import R_construct as rc
+import angle_pack as ag
 
 
 def motion_plan(start_point, end_point, time_to_execut, time_diff):
@@ -51,7 +51,7 @@ def motion_plan(start_point, end_point, time_to_execut, time_diff):
         angle_diff = angle / reso
         n_sub = np.array([R[2, 1] - R[1, 2], R[0, 2] - R[2, 0], R[1, 0] - R[0, 1]])
         n_vec_diff = (1 / (2 * np.sin(angle))) * n_sub
-        R_diff = rc.R_axis_and_angle(n_vec_diff, angle_diff)
+        R_diff = ag.R_axis_and_angle(n_vec_diff, angle_diff)
 
     # init first point
     full_path = np.zeros((reso, 4, 4))
