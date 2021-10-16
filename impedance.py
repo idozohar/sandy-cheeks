@@ -46,8 +46,9 @@ def imic(sim, K, B, M, q_r, q_r_dot, p, p_dot, dt, f_in):
     # print(euler_r)
     # f_in[0:2] = np.array([0, 0])
     # Impedance model equation
-    fd = np.array([0, 10, 0, 0, 0, 0])
-    integrand = inv(M) @ (-f_in + B @ (p_dot_0 - x_r_dot) + K @ (p_0 - x_r))  # X_m_2dot
+    fd = np.array([0, 5, 0, 0, 0, 0])
+    # f_in[1] += 5
+    integrand = inv(M) @ (-f_in - fd + B @ (p_dot_0 - x_r_dot) + K @ (p_0 - x_r))  # X_m_2dot
     # Discrete integral for X_m_dot & X_m
     x_im_dot = x_r_dot + dt * integrand
     x_im = x_r + dt * x_im_dot
@@ -77,6 +78,8 @@ def imic(sim, K, B, M, q_r, q_r_dot, p, p_dot, dt, f_in):
         q_d_dot = q_r_dot
         print('Jacobian was singular! ', q_d[4])
 
+    x_im[0] = p_0[0]
+    x_im[2] = p_0[2]
     return q_d, q_d_dot, x_im
 
 

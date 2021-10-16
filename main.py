@@ -11,7 +11,7 @@ import UR5_kinematics as UR5_kin
 from scipy.spatial.transform import Rotation as R
 import angle_pack as ag
 
-need_render = True
+need_render = False
 imp_type = "IM"
 # Set points here (homogeneous transformation matrix)
 h = 0.2
@@ -89,8 +89,8 @@ sim.set_state(state)
 # ---------------  Set Simulation Parameters  ---------------- #
 controller = 'PID'  # Choose Controller: 'PID' , 'impedance' , 'bias'
 hybrid = True  # if true, Movement to cylinder with PID and afterwards with impedance
-move_speed = 0.4  # [m/s] Set the desired Speed
-sim_time = 12  # [sec] Length of Simulation
+move_speed = 0.4 * 0.5  # [m/s] Set the desired Speed
+sim_time = 12 * 1.5  # [sec] Length of Simulation
 
 is_gravity_on = True
 print_status = True  # Prints Graphs at the end of run
@@ -104,9 +104,9 @@ ki = np.diag(np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.001]) * 0)  # 0.5
 kd = 0.3 * 0  # 0.3
 
 # impedance
-kp_im = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1)
+kp_im = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1.2)
 ki_im = np.diag(np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.001]) * 0)  # 0.5
-kd_im = 0.3 * 0  # 0.3
+kd_im = 0.3 * 0
 
 m = 0.2
 omega = 2
@@ -115,14 +115,14 @@ zeta = 0.7
 k = m * omega**2
 b = 2 * zeta * omega * m
 # K = np.identity(6) * 4000  # 4000
-K = np.array([[2000, 0, 0, 0, 0, 0],
-              [0, 1000, 0, 0, 0, 0],
-              [0, 0, 2000, 0, 0, 0],
+K = np.array([[1000, 0, 0, 0, 0, 0],
+              [0, 800, 0, 0, 0, 0],
+              [0, 0, 1000, 0, 0, 0],
               [0, 0, 0, 10000, 0, 0],
               [0, 0, 0, 0, 10000, 0],
               [0, 0, 0, 0, 0, 20000]])
 
-B = np.identity(6) * 300  # 200
+B = np.identity(6) * 300 * 0.5  # 200
 # B = np.array([[200, 0, 0, 0, 0, 0],
 #               [0, 300, 0, 0, 0, 0],
 #               [0, 0, 200, 0, 0, 0],
@@ -368,7 +368,7 @@ while True:
             # our_func.print_torque(u_log, DT)
             # force print
             our_func.print_force_scope2(force_log, DT)
-            # our_func.print_xyz_3D(x_r)
+            our_func.print_xyz_3D(x_r)
             time = np.linspace(0, sim_time, len(x_0[0, :]))
             our_func.print_xyz_time(time[1:], x_0[:, 1:], x_m[:, 1:], x_r[:, 1:])
 
