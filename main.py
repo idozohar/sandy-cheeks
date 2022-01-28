@@ -11,10 +11,11 @@ import UR5_kinematics as UR5_kin
 from scipy.spatial.transform import Rotation as R
 import angle_pack as ag
 
-need_render = False
+need_render = True
 imp_type = "IM"
 # Set points here (homogeneous transformation matrix)
 h = 0.2
+x_down = np.array([-0.4, -0.567, 0.2])
 start = np.array([[1, 0, 0, -0.4],
                   [0, 0, -1, -0.4],
                   [0, 1, 0, 0.2],
@@ -25,26 +26,40 @@ mid = np.array([[1, 0, 0, -0.4],
                 [0, 1, 0, 0.2],
                 [0, 0, 0, 1]])
 
-target = np.array([[1, 0, 0, 0.4],
+target = np.array([[1, 0, 0, -0.2],
                    [0, 0, -1, -0.575],
                    [0, 1, 0, 0.2],
                    [0, 0, 0, 1]])
 
-up_from_target = np.array([[1, 0, 0, 0.4],
+up_from_target = np.array([[1, 0, 0, -0.2],
                            [0, 0, -1, -0.575],
-                           [0, 1, 0, 0.4],
+                           [0, 1, 0, 0.275],
                            [0, 0, 0, 1]])
 
 left = np.array([[1, 0, 0, -0.4],
                  [0, 0, -1, -0.575],
-                 [0, 1, 0, 0.4],
+                 [0, 1, 0, 0.275],
                  [0, 0, 0, 1]])
 
 down = np.array([[1, 0, 0, -0.4],
                  [0, 0, -1, -0.575],
-                 [0, 1, 0, 0.2],
+                 [0, 1, 0, 0.35],
                  [0, 0, 0, 1]])
-x_down = np.array([-0.4, -0.567, 0.2])
+
+left2 = np.array([[1, 0, 0, -0.2],
+                 [0, 0, -1, -0.575],
+                 [0, 1, 0, 0.35],
+                 [0, 0, 0, 1]])
+
+up3 = np.array([[1, 0, 0, -0.2],
+                 [0, 0, -1, -0.575],
+                 [0, 1, 0, 0.425],
+                 [0, 0, 0, 1]])
+
+right3 = np.array([[1, 0, 0, -0.4],
+                 [0, 0, -1, -0.575],
+                 [0, 1, 0, 0.425],
+                 [0, 0, 0, 1]])
 
 dx = 0.01
 dy = 0.01
@@ -64,7 +79,7 @@ down2 = down2 @ trans_mat
 
 # add all points by order to path
 path2cylinder_points = np.array([start, mid, target])  # straight path
-path2target_points = np.array([target, up_from_target, left, down, down2])  # straight path with grip
+path2target_points = np.array([target, up_from_target, left, down, left2, up3, right3, down2])  # straight path with grip
 
 # build simulation from xml file
 model = load_model_from_path("./UR5_our/UR5gripper_box.xml")
@@ -99,12 +114,12 @@ flag_norm = False
 
 # Control
 # PID
-kp = np.diag(np.array([100, 100, 100, 50, 50, 0.1]))
+kp = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1)
 ki = np.diag(np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.001]) * 0)  # 0.5
 kd = 0.3 * 0  # 0.3
 
 # impedance
-kp_im = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1.2)
+kp_im = np.diag(np.array([100, 100, 100, 50, 50, 0.1]) * 1.3)
 ki_im = np.diag(np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.001]) * 0)  # 0.5
 kd_im = 0.3 * 0
 

@@ -394,34 +394,32 @@ def print_force_scope2(force_log, dt):
     t_len = len(force_log[0, :]) * dt
     force_log_filt = my_filter.butter_lowpass_filter(force_log, 3.6, 30, 6)
     t = np.linspace(0, t_len, len(force_log[0, :]))
-    w = 2
-    ones_vec = np.ones_like(t)
+    f_log_mean = np.zeros((6, 1))
+    step = 100
+    for i in range(len(force_log_filt[0])-1):
+        if i >= len(force_log_filt[0]) - step:
+            f_mean = np.mean(force_log_filt[:, (i - step):i], axis=1)
+        else:
+            f_mean = np.mean(force_log_filt[:, i:(i + step)], axis=1)
+        f_mean = np.reshape(f_mean, (6, 1))
+        f_log_mean = np.append(f_log_mean, f_mean, axis=1)
+
+    print("x_min:", np.min(f_log_mean[0]), "x_max:", np.max(f_log_mean[0]))
+    print("y_min:", np.min(f_log_mean[1]), "y_max:", np.max(f_log_mean[1]))
+    print("z_min:", np.min(f_log_mean[2]), "z_max:", np.max(f_log_mean[2]))
     f, (ax1, ax2, ax3) = plt.subplots(3, 1, sharex='col')
     ax1.set_title('Force [N]')
-    ax1.plot(t, force_log[0, :], t, force_log_filt[0, :])
+    ax1.plot(t, force_log_filt[0, :], t, f_log_mean[0, :])
     ax1.grid(axis='both')
     ax1.set_ylabel('Force x')
-    ax2.plot(t, force_log[1, :], t, force_log_filt[1, :])
+    ax2.plot(t, force_log_filt[1, :], t, f_log_mean[1, :])
     ax2.set_ylabel('Force y')
     ax2.grid(axis='both')
-    ax3.plot(t, force_log[2, :], t, force_log_filt[2, :])
+    ax3.plot(t, force_log_filt[2, :], t, f_log_mean[2, :])
     ax3.set_ylabel('Force z')
     ax3.grid(axis='both')
     ax3.set_xlabel('Time [sec]')
-    # np.convolve(x, np.ones(w), 'valid') / w
-    # f2, (ax4, ax5, ax6) = plt.subplots(3, 1, sharex='col')
-    # ax4.set_title('Force_mean [N]')
-    # ax4.plot(t, moving_average(force_log_filt[0, :], 10))
-    # ax4.grid(axis='both')
-    # ax4.set_ylabel('Force x')
-    # ax5.plot(t, moving_average(force_log_filt[1, :], 10))
-    # ax5.set_ylabel('Force y')
-    # ax5.grid(axis='both')
-    # ax6.plot(t, moving_average(force_log_filt[2, :], 10))
-    # ax6.set_ylabel('Force z')
-    # ax6.grid(axis='both')
-    # ax6.set_xlabel('Time [sec]')
-    # plt.show()
+    plt.show()
 
 
 def contacts(sim):
@@ -549,7 +547,7 @@ def print_difference(x_r, x_im, x_0, dt):
 
 def print_xyz_3D(x_r):
 
-    z0 = 0.95863
+    z0 = 0 #0.95863
     x = np.arange(-0.5, 2, 0.1)
     y = np.arange(-0.5, 2, 0.1)
     X, Y = np.meshgrid(x, y)
