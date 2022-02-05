@@ -10,8 +10,8 @@ import angle_pack as ag
 import print_results as prt
 
 # ---------------  Run the simulation  ---------------- #
-control_law = 'IMIC'  # Choose Control law: 'PID' , 'IMIC' , 'PBIC'
-need_render = False  # To print results choose False
+control_law = 'PID'  # Choose Control law: 'PID' , 'IMIC' , 'PBIC'
+need_render = True  # To print results choose False
 
 # ---------------  Set trajectory (homogeneous transformation matrix)  ---------------- #
 x_wall = np.array([-0.4, -0.567, 0.2])
