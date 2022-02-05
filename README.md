@@ -12,5 +12,4 @@ make sure to folloe this guide for further instructions :https://medium.com/@chi
 
 NOTE: as to-date, you cannot run mujoco 200 on Windows. pla make sure you preform all the downloads on Linux or that you have an operating virtual machine.
 
-![alt text](https://github.com/idozohar/sandy-cheeks/Results/sander_wall_begin.jpg?raw=true)
-![Alt text](relative/(https://github.com/idozohar/sandy-cheeks/Results/to/sander_wall_begin.jpg?raw=true "Title")
+Lilach Biton & Ido Zohar
