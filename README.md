@@ -9,4 +9,5 @@ In order to excecute the code in this repository, make sure you have:
 5) mojoco activation key
 
 make sure to folloe this guide for further instructions :https://medium.com/@chinmayburgul/setting-up-mujoco200-on-linux-16-04-18-04-38e5a3524c85
+
 note: as to-date, you cannot run mujoco 200 on Windows. pla make sure you preform all the downloads on Linux or that you have an operating virtual machine.
