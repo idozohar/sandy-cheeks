@@ -10,6 +10,6 @@ In order to excecute the code in this repository, make sure you have:
 
 make sure to folloe this guide for further instructions :https://medium.com/@chinmayburgul/setting-up-mujoco200-on-linux-16-04-18-04-38e5a3524c85
 
-NOTE: as to-date, you cannot run mujoco 200 on Windows. pla make sure you preform all the downloads on Linux or that you have an operating virtual machine.
+NOTE: as to-date, you cannot run mujoco 200 on Windows. please make sure you preform all the downloads on Linux or that you have an operating virtual machine.
 
 Lilach Biton & Ido Zohar
